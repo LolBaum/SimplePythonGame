@@ -1,19 +1,6 @@
 import pygame
 import sys
-
-
-class Obj:
-    def __init__(self, rect: pygame.rect.Rect,
-                 surf: pygame.surface.Surface):
-        self.surf = surf
-        self.rect = rect
-
-    def on_click(self):
-        self._set_hidden(False)
-        print(f"freed {self.value}")
-
-    def draw(self, display: pygame.surface.Surface):
-        pass
+from object import Ball
 
 
 if __name__ == "__main__":
@@ -25,10 +12,14 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
     font = pygame.font.Font(size=40)
 
+    b = Ball((200, 200), 20)
+
     print("Starting main loop")
     while True:
         pygame.display.flip()
         clock.tick(30)
+
+        b.draw(screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
