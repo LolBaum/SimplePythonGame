@@ -1,6 +1,7 @@
 import pygame
 import sys
 from object import Ball
+from utils import normalize, vector_length
 
 
 if __name__ == "__main__":
@@ -21,8 +22,10 @@ if __name__ == "__main__":
 
     print("Starting main loop")
     while True:
-        pygame.display.flip()
-        clock.tick(30)
+        clock.tick(60)
+        ################
+        # Handling I/O #
+        ################
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -42,24 +45,45 @@ if __name__ == "__main__":
                         dragging = True
                         drag_start_pos = white_ball.rect.center #(x, y)
                         print("white_ball")
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == pygame.BUTTON_LEFT:
-                    dragging = False
-                    print("dragging = ", dragging)
             if dragging:
                 if not pygame.mouse.get_pressed(num_buttons=3)[0]:  # left mouse button
                     dragging = False
+                    direction = (drag_start_pos[0] - dragging_pos[0], drag_start_pos[1] - dragging_pos[1])
+                    normalised_dir = normalize(direction)
+                    print("dir = ", normalised_dir)
+                    strength = vector_length(direction)
+                    if strength >= 30:
+                        strength = 30
+                    white_ball.set_impulse(normalised_dir, strength)
+
+        ###########################
+        # Applying game mechanics #
+        ###########################
+        white_ball.update()
+        if white_ball.rect.centerx <= white_ball.radius:
+            white_ball.flip_impulse(True, False)
+        elif white_ball.rect.centerx >= w - white_ball.radius:
+            white_ball.flip_impulse(True, False)
+
+        if white_ball.rect.centery <= white_ball.radius:
+            white_ball.flip_impulse(False, True)
+        elif white_ball.rect.centery >= h - white_ball.radius:
+            white_ball.flip_impulse(False, True)
+
+        #######################
+        # Displaying graphics #
+        #######################
 
         screen.fill(bg_color)
 
-
         white_ball.draw(screen)
-
 
         if dragging:
             print("dragging")
             dragging_pos = pygame.mouse.get_pos()
             pygame.draw.line(screen, (255, 255, 255), drag_start_pos, dragging_pos)
+
+        pygame.display.flip()
 
 
 
