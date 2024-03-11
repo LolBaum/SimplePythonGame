@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 
 
 def setup_pygame():
@@ -14,18 +15,12 @@ def basic_surf(size, color):
     return surf
 
 
-NUMBER_COLORS = ["blue",
-                 "springgreen4",
-                 "red",
-                 "blue4",
-                 "brown",
-                 "cyan",
-                 "black",
-                 "grey"]
+def normalize(vec: np.array or list[float, float] or tuple(float, float)):
+    norm = np.linalg.norm(vec)
+    if norm == 0:
+        return vec
+    return vec / norm
 
 
-def number_field(n, font, size):
-    surf = basic_surf(size, (180, 180, 180))
-    color = NUMBER_COLORS[n-1] if len(NUMBER_COLORS) > n else NUMBER_COLORS[-1]
-    surf.blit(font.render(" " + str(n), True, color), pygame.rect.Rect(0, 0, 0, 0))
-    return surf
+def vector_length(vec):
+    return np.linalg.norm(vec)
