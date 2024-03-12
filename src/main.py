@@ -1,7 +1,7 @@
 import pygame
 import sys
 from object import Ball, Opponent
-from utils import normalize, vector_length
+from utils import normalize, vector_length, angle_between
 
 
 if __name__ == "__main__":
@@ -15,6 +15,9 @@ if __name__ == "__main__":
     font = pygame.font.Font(size=40)
 
     white_ball = Ball((200, 200), 20)
+    balls = [white_ball]
+    other_ball = Ball((400, 400), 20)
+    balls.append(other_ball)
 
     dragging = False
     drag_start_pos = (0, 0)
@@ -57,7 +60,7 @@ if __name__ == "__main__":
                     direction = (drag_start_pos[0] - dragging_pos[0], drag_start_pos[1] - dragging_pos[1])
                     normalised_dir = normalize(direction)
                     print("dir = ", normalised_dir)
-                    strength = vector_length(direction)
+                    strength = vector_length(direction)/4
                     if strength >= 30:
                         strength = 30
                     white_ball.set_impulse(normalised_dir, strength)
@@ -65,20 +68,24 @@ if __name__ == "__main__":
         ###########################
         # Applying game mechanics #
         ###########################
-        white_ball.update()
-        if white_ball.rect.centerx <= white_ball.radius:
-            white_ball.rect.centerx = white_ball.radius
-            white_ball.flip_impulse(True, False)
-        elif white_ball.rect.centerx >= w - white_ball.radius:
-            white_ball.rect.centerx = w - white_ball.radius
-            white_ball.flip_impulse(True, False)
+        for b in balls:  # todo: move this to the ball class
+            b.update()
+            if b.rect.centerx <= b.radius:
+                b.rect.centerx = b.radius
+                b.flip_impulse(True, False)
+            elif b.rect.centerx >= w - b.radius:
+                b.rect.centerx = w - b.radius
+                b.flip_impulse(True, False)
 
-        if white_ball.rect.centery <= white_ball.radius:
-            white_ball.rect.centery = white_ball.radius
-            white_ball.flip_impulse(False, True)
-        elif white_ball.rect.centery >= h - white_ball.radius:
-            white_ball.rect.centery = h - white_ball.radius
-            white_ball.flip_impulse(False, True)
+            if b.rect.centery <= b.radius:
+                b.rect.centery = b.radius
+                b.flip_impulse(False, True)
+            elif b.rect.centery >= h - b.radius:
+                b.rect.centery = h - b.radius
+                b.flip_impulse(False, True)
+
+        for i, b in enumerate(balls):
+            b.collision(balls, i+1)
 
         #######################
         # Displaying graphics #
@@ -86,11 +93,12 @@ if __name__ == "__main__":
 
         screen.fill(bg_color)
 
-        white_ball.draw(screen)
+        for b in balls:
+            b.draw(screen)
+
         opponent.draw(screen)
 
         if dragging:
-            print("dragging")
             dragging_pos = pygame.mouse.get_pos()
             drag_start_pos = white_ball.rect.center
             pygame.draw.line(screen, (255, 255, 255), drag_start_pos, dragging_pos)
