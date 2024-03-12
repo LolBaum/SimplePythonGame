@@ -27,11 +27,12 @@ class Obj:
 class Ball(Obj):
     def __init__(self, pos: (float, float),
                  radius: int,
-                 surf: pygame.surface.Surface = None):
+                 surf: pygame.surface.Surface = None,
+                 color: (int, int, int) = (200, 100, 100)):
         self.radius = radius
         size = radius * 2
         surf = pygame.surface.Surface((size, size), pygame.SRCALPHA)
-        pygame.draw.circle(surf, (200, 100, 100), (radius, radius), radius)
+        pygame.draw.circle(surf, color, (radius, radius), radius)
         super().__init__(pygame.rect.Rect(pos, (size, size)), surf)
         self.pos = np.array(pos, dtype=float)
         self.vel = np.zeros(2, dtype=float)
@@ -46,17 +47,33 @@ class Ball(Obj):
             if self.distance(b) < self.radius + b.radius:
                 v_res = self.vel -b.vel
                 pos_diff = b.pos - self.pos
-                if (v_res * pos_diff).sum() >= 0:
-                    m1 = 1  # Todo: use masses
-                    m2 = 1
-                    theta = - np.arctan2(pos_diff[0], pos_diff[1])
-                    u1 = rotate(self.vel, theta)
-                    u2 = rotate(b.vel, theta)
-                    v1 = rotate([u1[0] * (m1 - m2)/(m1 + m2) + u2[0] * 2 * m2/(m1 + m2), u1[1]], -theta)
-                    v2 = rotate([u2[0] * (m2 - m1)/(m1 + m2) + u1[0] * 2 * m1/(m1 + m2), u2[1]], -theta)
 
-                    self.vel = np.array(v1)
-                    b.vel = np.array(v2)
+                bounds = self.radius + b.radius
+                intersection = self.distance(b) - bounds
+                if intersection < 0:
+                    d = normalize(pos_diff)
+                    self.pos += d * (intersection / 2)
+                    b.pos -= d * (intersection / 2)
+
+                #if (v_res * pos_diff).sum() >= 0:
+                m1 = 2  # Todo: use masses
+                m2 = 2
+                theta = - np.arctan2(pos_diff[0], pos_diff[1])
+                u1 = rotate(self.vel, theta)
+                u2 = rotate(b.vel, theta)
+                v1 = rotate([u1[0] * (m1 - m2)/(m1 + m2) + u2[0] * 2 * m2/(m1 + m2), u1[1]], -theta)
+                v2 = rotate([u2[0] * (m2 - m1)/(m1 + m2) + u1[0] * 2 * m1/(m1 + m2), u2[1]], -theta)
+
+                self.vel = np.array(v1)
+                b.vel = np.array(v2)
+
+
+
+
+
+
+
+
 
     def update(self):
         self.vel *= self.friction
@@ -64,7 +81,7 @@ class Ball(Obj):
         self.rect.centerx += int(self.vel[0])
         self.rect.centery += int(self.vel[1])
         self.rect.center = (int(self.pos[0]), int(self.pos[1]))
-        if np.linalg.norm(self.vel) < 0.5:
+        if np.linalg.norm(self.vel) < 0.1:
             self.vel = np.zeros(2, dtype=float)
             self.is_moving = False
         else:

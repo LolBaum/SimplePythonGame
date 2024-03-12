@@ -37,5 +37,14 @@ def rotate(vel, theta):
     return [vel[0] * np.cos(theta) - vel[1] * np.sin(theta), vel[0] * np.sin(theta) + vel[1] * np.cos(theta)]
 
 
+def random_position(xy_lower, xy_upper):
+    """returns positive values"""
+    pos = np.random.rand(2)
+    pos *= np.array(xy_upper) - xy_lower
+    pos += xy_lower
+    print(pos)
+    return pos
+
+
 def hit_object():
     pass
