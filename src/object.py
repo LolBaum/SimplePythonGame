@@ -62,12 +62,12 @@ class Ball(Obj):
 class Opponent(Obj):
     def __init__(self, vertices):
         self.vertices = np.array(vertices, dtype=float)
-        self.surface = pygame.surface.Surface((10,100), pygame.SRCALPHA) # wie setze ich hier size fest?
-        super().__init__(pygame.Rect(0, 0, 0, 0), self.surface)
-        pygame.draw.polygon(self.surface,pygame.Color((0,128,0)), self.vertices)
+        surf = pygame.surface.Surface((200,200), pygame.SRCALPHA)
+        pygame.draw.polygon(surf, pygame.Color((0, 128, 0)), self.vertices)
+        super().__init__(pygame.Rect(0, 0, 0, 0),
+                         surf)
 
     def update(self):
         pass
 
-    def draw(self, screen):
-        screen.blit(self.surface, self.vertices[0])
+
