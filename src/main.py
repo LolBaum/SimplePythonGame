@@ -21,8 +21,8 @@ if __name__ == "__main__":
     dragging_pos = (0, 0)
 
     #obstacle
-    opponent_vertices = [(10, 100), (0, -300), (100, 10)]
-    opponent = Opponent(opponent_vertices)
+    opponent_vertices = [(0, 0), (100, 0), (0, 100)]
+    opponent = Opponent((100, 100), opponent_vertices)
 
     bg_color = pygame.Color('black')
 
@@ -67,13 +67,17 @@ if __name__ == "__main__":
         ###########################
         white_ball.update()
         if white_ball.rect.centerx <= white_ball.radius:
+            white_ball.rect.centerx = white_ball.radius
             white_ball.flip_impulse(True, False)
         elif white_ball.rect.centerx >= w - white_ball.radius:
+            white_ball.rect.centerx = w - white_ball.radius
             white_ball.flip_impulse(True, False)
 
         if white_ball.rect.centery <= white_ball.radius:
+            white_ball.rect.centery = white_ball.radius
             white_ball.flip_impulse(False, True)
         elif white_ball.rect.centery >= h - white_ball.radius:
+            white_ball.rect.centery = h - white_ball.radius
             white_ball.flip_impulse(False, True)
 
         #######################
@@ -88,6 +92,7 @@ if __name__ == "__main__":
         if dragging:
             print("dragging")
             dragging_pos = pygame.mouse.get_pos()
+            drag_start_pos = white_ball.rect.center
             pygame.draw.line(screen, (255, 255, 255), drag_start_pos, dragging_pos)
 
         pygame.display.flip()
