@@ -24,3 +24,6 @@ def normalize(vec: np.array or list[float, float] or tuple(float, float)):
 
 def vector_length(vec):
     return np.linalg.norm(vec)
+
+def hit_object():
+    pass

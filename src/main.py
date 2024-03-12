@@ -1,6 +1,6 @@
 import pygame
 import sys
-from object import Ball
+from object import Ball, Opponent
 from utils import normalize, vector_length
 
 
@@ -8,15 +8,21 @@ if __name__ == "__main__":
     print("running game")
     pygame.init()
     pygame.font.init()
-    w, h = 940, 940
+    pygame.display.set_caption("Billard Blizzard")
+    w, h = 940, 640
     screen = pygame.display.set_mode((w, h))
     clock = pygame.time.Clock()
     font = pygame.font.Font(size=40)
 
     white_ball = Ball((200, 200), 20)
+
     dragging = False
     drag_start_pos = (0, 0)
     dragging_pos = (0, 0)
+
+    #obstacle
+    opponent_vertices = [(10, 100), (0, -300), (100, 10)]
+    opponent = Opponent(opponent_vertices)
 
     bg_color = pygame.Color('black')
 
@@ -77,6 +83,7 @@ if __name__ == "__main__":
         screen.fill(bg_color)
 
         white_ball.draw(screen)
+        opponent.draw(screen)
 
         if dragging:
             print("dragging")

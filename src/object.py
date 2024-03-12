@@ -1,10 +1,13 @@
 import pygame
 import numpy as np
+
+
 def normalize(v):
     norm = np.linalg.norm(v)
     if norm == 0:
-       return v
+        return v
     return v / norm
+
 
 class Obj:
     def __init__(self, rect: pygame.rect.Rect,
@@ -28,14 +31,13 @@ class Ball(Obj):
                  radius: int,
                  surf: pygame.surface.Surface = None):
         self.radius = radius
-        size = radius*2
+        size = radius * 2
         surf = pygame.surface.Surface((size, size), pygame.SRCALPHA)
         pygame.draw.circle(surf, (200, 100, 100), (radius, radius), radius)
         super().__init__(pygame.rect.Rect(pos, (size, size)), surf)
         self.pos = np.array(pos, dtype=float)
         self.vel = np.zeros(2, dtype=float)
         self.friction = 0.995
-
 
     def update(self):
         self.vel *= self.friction
@@ -45,7 +47,7 @@ class Ball(Obj):
         self.rect.center = (int(self.pos[0]), int(self.pos[1]))
         if np.linalg.norm(self.vel) < 0.5:
             self.vel = np.zeros(2, dtype=float)
-        print(self.rect.centerx,  int(self.vel[1]))
+        print(self.rect.centerx, int(self.vel[1]))
 
     def set_impulse(self, direction: np.array, strength: float, dampening: float = 0.8):
         self.vel = direction * strength * dampening
@@ -57,5 +59,15 @@ class Ball(Obj):
             self.vel[1] *= -1
 
 
+class Opponent(Obj):
+    def __init__(self, vertices):
+        self.vertices = np.array(vertices, dtype=float)
+        self.surface = pygame.surface.Surface((10,100), pygame.SRCALPHA) # wie setze ich hier size fest?
+        super().__init__(pygame.Rect(0, 0, 0, 0), self.surface)
+        pygame.draw.polygon(self.surface,pygame.Color((0,128,0)), self.vertices)
 
+    def update(self):
+        pass
 
+    def draw(self, screen):
+        screen.blit(self.surface, self.vertices[0])
