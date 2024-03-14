@@ -26,8 +26,10 @@ if __name__ == "__main__":
     dragging_pos = (0, 0)
 
     #obstacle
-    opponent_vertices = [(0, 0), (100, 0), (0, 100)]
-    opponent = Opponent((100, 100), opponent_vertices)
+    opponent_vertices = [(0, 0), (50, 0), (25, 50)]
+    opponent = Opponent((300,300), opponent_vertices)
+
+    opponents = [opponent]
 
     bg_color = pygame.Color('black')
 
@@ -59,6 +61,7 @@ if __name__ == "__main__":
                     elif blue_ball.rect.collidepoint(x, y):
                         dragging_blue = True
                         print("blue_ball")
+
             if dragging:
                 if not pygame.mouse.get_pressed(num_buttons=3)[0]:  # left mouse button
                     dragging = False
@@ -95,6 +98,11 @@ if __name__ == "__main__":
                 b.pos[1] = h - b.radius
                 b.flip_impulse(False, True)
 
+            for o in opponents:
+                if o.rect.collidepoint(b.pos):
+                    opponents.remove(o)
+                    print("Collide")
+
         for i, b in enumerate(balls):
             b.collision(balls, i+1)
 
@@ -107,7 +115,8 @@ if __name__ == "__main__":
         for b in balls:
             b.draw(screen)
 
-        opponent.draw(screen)
+        for o in opponents:
+            o.draw(screen)
 
         if dragging:
             dragging_pos = pygame.mouse.get_pos()

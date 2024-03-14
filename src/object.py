@@ -11,7 +11,7 @@ def normalize(v):
     return v / norm
 
 
-class Obj:
+class Obj():
     def __init__(self, rect: pygame.rect.Rect,
                  surf: pygame.surface.Surface):
         self.surf = surf
@@ -68,13 +68,6 @@ class Ball(Obj):
                 b.vel = np.array(v2)
 
 
-
-
-
-
-
-
-
     def update(self):
         self.vel *= self.friction
         self.pos += self.vel
@@ -104,12 +97,22 @@ class Ball(Obj):
 class Opponent(Obj):
     def __init__(self, pos, vertices):
         self.vertices = vertices
-        surf = pygame.surface.Surface((200,200), pygame.SRCALPHA)
-        pygame.draw.polygon(surf, pygame.Color((0, 128, 0)), self.vertices)
-        super().__init__(pygame.Rect(pos, (0, 0)),
-                         surf)
+        size = abs(vertices[0][0] - vertices[1][0]) + 1
+        surf = pygame.surface.Surface((size, size), pygame.SRCALPHA)
+        pygame.draw.polygon(surf, pygame.Color((50, 100, 50)), self.vertices)
+        super().__init__(surf.get_rect(), surf)
+        self.rect.center = pos
+        self.visible = True
+
+    def __del__(self):
+        pass
+
 
     def update(self):
         pass
+
+
+
+
 
 
