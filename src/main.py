@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 import sys
-from object import Ball, Opponent
+from object import Ball, Opponent, Border
 from utils import normalize, vector_length, random_position
 
 if __name__ == "__main__":
@@ -13,6 +13,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((w, h))
     clock = pygame.time.Clock()
     font = pygame.font.Font(size=40)
+    pygame.mixer.init() # add this line
 
     white_ball = Ball((200, 200), 20, color=(220, 220, 220))
     blue_ball = Ball((400, 200), 20, color=(100, 100, 220))
@@ -30,6 +31,9 @@ if __name__ == "__main__":
     opponent = Opponent((300,300), opponent_vertices)
 
     opponents = [opponent]
+
+    border = Border((500, 200), (600, 300))
+    borders = [border]
 
     bg_color = pygame.Color('black')
 
@@ -105,6 +109,8 @@ if __name__ == "__main__":
 
         for i, b in enumerate(balls):
             b.collision(balls, i+1)
+            b.collide_with_wall(borders)
+
 
         #######################
         # Displaying graphics #
@@ -117,6 +123,8 @@ if __name__ == "__main__":
 
         for o in opponents:
             o.draw(screen)
+
+        border.draw(screen)
 
         if dragging:
             dragging_pos = pygame.mouse.get_pos()

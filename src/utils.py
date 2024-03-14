@@ -48,3 +48,31 @@ def random_position(xy_lower, xy_upper):
 
 def hit_object():
     pass
+
+
+def reflect_vector(d, n):
+    """
+    :param d: directional vector
+    :param n: normal vector of reflection axis (must be normalised)
+    :return: reflected vector
+    """
+    return d - 2 * (d @ n) * n
+
+
+
+def distance_point_line_2(pt, l1, l2):
+    """From https://github.com/Rabbid76/PyGameExamplesAndAnswers/blob/master/examples/minimal_examples/pygame_minimal_intersect_point_line.py"""
+    nx, ny = l1[1] - l2[1], l2[0] - l1[0]
+    nlen = np.hypot(nx, ny)
+    nx /= nlen
+    ny /= nlen
+    vx, vy = pt[0] - l1[0],  pt[1] - l1[1]
+    dist = abs(nx*vx + ny*vy)
+    return dist
+
+def distance_point_line(pt, l1, l2):
+    """From https://github.com/Rabbid76/PyGameExamplesAndAnswers/blob/master/examples/minimal_examples/pygame_minimal_intersect_point_line.py"""
+    NV = pygame.math.Vector2(l1[1] - l2[1], l2[0] - l1[0])
+    LP = pygame.math.Vector2(l1)
+    P = pygame.math.Vector2(pt)
+    return abs(NV.normalize().dot(P -LP))

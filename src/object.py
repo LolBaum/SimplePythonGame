@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
 
-from src.utils import rotate
+from src.utils import rotate, reflect_vector
 
 
 def normalize(v):
@@ -11,7 +11,7 @@ def normalize(v):
     return v / norm
 
 
-class Obj():
+class Obj:
     def __init__(self, rect: pygame.rect.Rect,
                  surf: pygame.surface.Surface):
         self.surf = surf
@@ -67,7 +67,6 @@ class Ball(Obj):
                 self.vel = np.array(v1)
                 b.vel = np.array(v2)
 
-
     def update(self):
         self.vel *= self.friction
         self.pos += self.vel
@@ -92,6 +91,19 @@ class Ball(Obj):
     def distance(self, other):
         return np.sqrt(((self.pos - other.pos)**2).sum())
 
+    def reflect_on_line(self, lp0, lp1):
+        l_dir = normalize(lp1 - lp0)                # direction vector of the line
+        nv = np.array([-l_dir[1], l_dir[0]])   # normal vector to the line
+        d = (lp0-self.pos) @ nv                            # distance to line
+        pt_x = self.pos + nv * d                               # intersection point on endless line
+        if not (abs(d) > self.radius or self.vel @ (pt_x-self.pos) <= 0 or  # test if the ball hits the line
+           (pt_x-lp0) @ l_dir < 0 or (pt_x-lp1) @ l_dir > 0):
+            self.vel = reflect_vector(self.vel, nv)                     # reflect the direction vector on the line (like a billiard ball)
+
+
+    def collide_with_wall(self, line_list):
+        for line in line_list:
+            self.reflect_on_line(*np.array(line.p))
 
 
 class Opponent(Obj):
@@ -112,7 +124,11 @@ class Opponent(Obj):
         pass
 
 
+class Border:
+    def __init__(self, p0, p1):
+        self.p = [p0, p1]
 
-
+    def draw(self, display: pygame.surface.Surface):
+        pygame.draw.line(display, (200, 200, 200), self.p[0], self.p[1], 5)
 
 
